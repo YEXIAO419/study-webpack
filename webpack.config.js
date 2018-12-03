@@ -1,7 +1,7 @@
 const path = require('path')
-const UglifyPlugin = require('uglifyjs-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const UglifyPlugin = require('uglifyjs-webpack-plugin') // 代码压缩插件
+const HtmlWebpackPlugin = require('html-webpack-plugin') //为html文件引入外部资源，动态增加每次编译后hash，防止缓存
+const ExtractTextPlugin = require('extract-text-webpack-plugin') // 依赖的 CSS 分离出来成为单独的文件
 
 module.exports = {
 	// 入口文件
@@ -15,6 +15,15 @@ module.exports = {
 
 	// 编辑模块，规则和对应编译插件
 	module: {
+		/**
+		** {test:...} 匹配特定条件
+		** {include:...} 匹配特定路径
+		** {exclude:...} 排除特定路径
+		** {and:[...]} 必须匹配数组中所有条件
+		** {or:[...]} 匹配数组中任意一个条件
+		** {not: [...]} 排除匹配数组中所有条件
+		** 条件可以是：字符串、正则表达式、函数、数组、对象
+		**/
 	    rules: [
 	      // 编译为js
 	      {
@@ -23,7 +32,7 @@ module.exports = {
 	          path.resolve(__dirname, 'src')
 	        ],
 	        use: 'babel-loader', // 注意babel-loader需要install babel-code（babel-loader的核心，
-	        					 //	loader8版本对应code7版本（7版本的安装是@babel/code）
+	       					 //	loader8版本对应code7版本（7版本的安装是@babel/code）
       		},					 // loader7版本对应code6版本(6版本对应安装的babel-code)
     		
       		// 编译为css
@@ -45,7 +54,7 @@ module.exports = {
       			rules: [
       				{
       					test: /\.(png|jpg|gif)$/,
-      					use: [
+      					use: [	
       						{
       							loader: 'file-loader',
       							options: {}
@@ -55,6 +64,15 @@ module.exports = {
       			]
       		}
     	],
+
+    	/**
+    	** 不需要解析依赖(第三方大型类库),提高构建速度
+    	** 从某种程度上说是个优化配置项，日常也可以不去使用。
+    	** 使用 noParse 进行忽略的模块文件中不能使用 import、require、define 等导入机制。
+    	**/
+    	noParse: {
+    		noParse: '/jquery|lodash/',
+    	}
   	},
 
 
